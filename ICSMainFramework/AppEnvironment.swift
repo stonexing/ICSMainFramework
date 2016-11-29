@@ -13,7 +13,8 @@ public struct AppEnv {
     // App Version
     // App Build
     public static var version: String {
-        return NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString") as! String
+        return Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
+        
     }
     
     public static var fullVersion: String {
@@ -21,19 +22,19 @@ public struct AppEnv {
     }
     
     public static var build: String {
-        return NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion") as! String
+        return Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
     }
     
     public static var countryCode: String {
-        return NSLocale.currentLocale().objectForKey(NSLocaleCountryCode) as? String ?? "US"
+        return (NSLocale.current as NSLocale).object(forKey: .countryCode) as? String ?? "US"
     }
     
     public static var languageCode: String {
-        return NSLocale.currentLocale().objectForKey(NSLocaleLanguageCode) as? String ?? "en"
+        return (NSLocale.current as NSLocale).object(forKey: .languageCode) as? String ?? "en"
     }
     
     public static var appName: String {
-        return NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleDisplayName") as! String
+        return Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as! String
     }
     
     

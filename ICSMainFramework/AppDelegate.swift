@@ -15,15 +15,18 @@ public class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     public var window: UIWindow?
     
-    public func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil) -> Bool {
         // Override point for customization after application launch.
-        window = UIWindow(frame: UIScreen.mainScreen().bounds)
-        window?.backgroundColor = UIColor.whiteColor()
+        
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.backgroundColor = UIColor.white
         window?.makeKeyAndVisible()
         appConfig.loadConfig("config.plist")
         if let lifeCycleItems = appConfig.lifeCycleConfig[LifeCycleKey.didFinishLaunchingWithOptions] {
             for item in lifeCycleItems{
-                item.object?.application?(application, didFinishLaunchingWithOptions: launchOptions)
+                if let protocol_ = item.object{
+                    protocol_.application!(application, didFinishLaunchingWithOptions: launchOptions)
+                }
             }
         }
         return true
@@ -66,7 +69,7 @@ public class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    public func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
+    public func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         if let lifeCycleItems = appConfig.lifeCycleConfig[LifeCycleKey.didRegisterForRemoteNotificationsWithDeviceToken] {
             for item in lifeCycleItems{
                 item.object?.application?(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
@@ -74,7 +77,7 @@ public class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    public func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject], fetchCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void) {
+    public func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Swift.Void) {
         if let lifeCycleItems = appConfig.lifeCycleConfig[LifeCycleKey.didReceiveRemoteNotificationFetchCompletionHandler] {
             for item in lifeCycleItems{
                 item.object?.application?(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
@@ -82,13 +85,23 @@ public class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    public func application(app: UIApplication, openURL url: NSURL, options: [String : AnyObject]) -> Bool {
+    public func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
         var handled = false
         if let lifeCycleItems = appConfig.lifeCycleConfig[LifeCycleKey.openURL] {
             for item in lifeCycleItems{
-                if let res = item.object?.application?(app, openURL: url, options: options) where res{
-                    handled = res
+                if let protocol_ = item.object {
+                    if #available(iOS 9.0, *) {
+                        if let res:Bool = protocol_.application!(app, open: url, options: options), res{
+                            handled = res
+                        }
+                    } else {
+                        // Fallback on earlier versions
+                    }
+//                    if let res = protocol_.application!(app, openURL: url, options: options) , res{
+//                        handled = res
+//                    }
                 }
+                
             }
         }
         return handled

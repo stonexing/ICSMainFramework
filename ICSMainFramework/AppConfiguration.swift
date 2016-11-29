@@ -36,17 +36,18 @@ public class AppConfig {
         return sharedConfigInstance
     }
     
-    public func loadConfig(fileName: String) {
-        var components = fileName.componentsSeparatedByString(".")
+    public func loadConfig(_ fileName: String) {
+        
+        var components = fileName.components(separatedBy: ".")
         let type = components.popLast()
-        let name = components.joinWithSeparator(".")
-        if let path = NSBundle.mainBundle().pathForResource(name, ofType: type) {
+        let name = components.joined(separator: ".")
+        if let path = Bundle.main.path(forResource: name, ofType: type) {
             let configDict = NSDictionary(contentsOfFile: path) as! [String: AnyObject]
             loadConfig(configDict)
         }
     }
     
-    public func loadConfig(dictionary: [String: AnyObject]) {
+    public func loadConfig(_ dictionary: [String: AnyObject]) {
         if let lifeCycleDict = dictionary[ConfigKey.lifeCycle] as? [String: AnyObject] {
             loadLifeCycleConfig(lifeCycleDict)
         }
@@ -55,7 +56,7 @@ public class AppConfig {
         }
     }
     
-    func loadLifeCycleConfig(dictionary: [String: AnyObject]) {
+    func loadLifeCycleConfig(_ dictionary: [String: AnyObject]) {
         for (key, value) in dictionary {
             var items = [AppLifeCycleItem]()
             if let itemArray = value as? [AnyObject] {
@@ -66,7 +67,7 @@ public class AppConfig {
         }
     }
     
-    func loadCustomConfig(dictionary: [String: AnyObject]) {
+    func loadCustomConfig(_ dictionary: [String: AnyObject]) {
         customConfig = dictionary
     }
     
